@@ -5,9 +5,13 @@
 // <LICENSE-MIT or http://opensource.org/licenses/MIT>, at your
 // option.  This file may not be copied, modified, or distributed
 // except according to those terms.
+
+//! Mock I2C trait implementations for use in development and testing
+
 use core::{I2CDevice, I2CMessage, I2CTransfer};
 use std::io;
 
+/// I2C communications operation result alias
 pub type I2CResult<T> = io::Result<T>;
 
 pub struct I2CRegisterMap {

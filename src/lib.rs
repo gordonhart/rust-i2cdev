@@ -6,8 +6,6 @@
 // option.  This file may not be copied, modified, or distributed
 // except according to those terms.
 
-//! # i2cdev
-//!
 //! The `i2cdev` crate provides a safe interface for interface
 //! with I2C devices under Linux.  The API wraps the [Linux Kernel
 //! interface](https://www.kernel.org/doc/Documentation/i2c/dev-interface) for

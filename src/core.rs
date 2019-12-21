@@ -6,6 +6,8 @@
 // option.  This file may not be copied, modified, or distributed
 // except according to those terms.
 
+//! I2C core communications traits
+
 use byteorder::{ByteOrder, LittleEndian};
 use std::error::Error;
 

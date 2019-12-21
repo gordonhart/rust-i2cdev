@@ -6,6 +6,8 @@
 // option.  This file may not be copied, modified, or distributed
 // except according to those terms.
 
+//! Linux I2C trait implementations
+
 use core::{I2CDevice, I2CTransfer};
 use ffi;
 use nix;

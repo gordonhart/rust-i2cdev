@@ -13,7 +13,7 @@ use std::error::Error;
 ///
 /// Typical implementations will store state with references to the bus
 /// in use and the address of the slave device.  The trait is based on the
-/// Linux i2cdev interface.
+/// [Linux i2cdev interface](https://www.kernel.org/doc/Documentation/i2c/dev-interface).
 pub trait I2CDevice {
     type Error: Error;
 
@@ -39,8 +39,8 @@ pub trait I2CDevice {
 
     /// Write a single byte to a device, without specifying a device register
     ///
-    /// This is the opposite operation as smbus_read_byte.  As with read_byte,
-    /// no register is specified.
+    /// This is the opposite operation as `smbus_read_byte`.  As with
+    /// `read_byte`, no register is specified.
     fn smbus_write_byte(&mut self, value: u8) -> Result<(), Self::Error> {
         self.write(&[value])
     }
@@ -92,7 +92,7 @@ pub trait I2CDevice {
 
     /// Read a block of up to 32 bytes from a device
     ///
-    /// Uses read_i2c_block_data instead read_block_data.
+    /// Uses `read_i2c_block_data` instead `read_block_data`.
     fn smbus_read_i2c_block_data(&mut self, register: u8, len: u8) -> Result<Vec<u8>, Self::Error>;
 
     /// Write a block of up to 32 bytes to a device
@@ -104,7 +104,7 @@ pub trait I2CDevice {
 
     /// Write a block of up to 32 bytes from a device
     ///
-    /// Uses write_i2c_block_data instead write_block_data.
+    /// Uses `write_i2c_block_data` instead `write_block_data`.
     fn smbus_write_i2c_block_data(
         &mut self,
         register: u8,
@@ -126,14 +126,16 @@ pub trait I2CDevice {
 /// single operation, potentially to different I2C slave addresses.
 ///
 /// Typical implementations will store state with references to the bus
-/// in use.  The trait is based on the Linux i2cdev interface.
+/// in use.  The trait is based on the
+/// [Linux i2cdev interface](https://www.kernel.org/doc/Documentation/i2c/dev-interface).
 pub trait I2CTransfer<'a> {
     type Error: Error;
     type Message: I2CMessage<'a>;
 
-    // Performs multiple serially chained I2C read/write transactions.  On
-    // success the return code is the number of successfully executed
-    // transactions
+    /// Perform multiple serially chained I2C read/write transactions
+
+    /// On success the return code is the number of successfully executed
+    /// transactions.
     fn transfer(&mut self, msgs: &'a mut [Self::Message]) -> Result<u32, Self::Error>;
 }
 

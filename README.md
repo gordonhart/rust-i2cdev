@@ -21,10 +21,11 @@ present, uses this crate as the backend for I2C.
 ## Example/API
 
 The source includes an example of using the library to talk to a Wii
-Nunchuck (which has an i2c interface).
+Nunchuck (which has an I2C interface).
 [Go View the Example](https://github.com/rust-embedded/rust-i2cdev/blob/master/examples/nunchuck.rs).
 
-The [Documentation](https://docs.rs/i2cdev) contains a quick overview of how to get started with an i2c device.
+The [Documentation](https://docs.rs/i2cdev) contains a quick overview of how to
+get started with an I2C device.
 
 In addition to the Read/Write traits, the following methods are
 available via the [I2CDevice trait](https://rust-embedded.github.io/rust-i2cdev/i2cdev/core/trait.I2CDevice.html).
@@ -41,14 +42,15 @@ The following features are implemented and planned for the library:
 - [ ] Add higher-level APIs/Macros for simplifying access to devices
       with large register sets
 - [ ] Add Support for Non-SMBus ioctl methods
-- [ ] Add examples for non-smbus ioctl methods
+- [ ] Add examples for non-SMBus ioctl methods
 - [ ] Unit Testing
 
 ## Cross Compiling
 
 Most likely, the machine you are running on is not your development
 machine (although it could be).  In those cases, you will need to
-cross-compile.  See https://github.com/japaric/rust-cross for pointers.
+cross-compile.  See [this Rust cross-compilation guide](https://github.com/japaric/rust-cross)
+for pointers.
 
 ## License
 
@@ -69,8 +71,8 @@ dual licensed as above, without any additional terms or conditions.
 ## Code of Conduct
 
 Contribution to this crate is organized under the terms of the [Rust Code of
-Conduct][CoC], the maintainer of this crate, the [Embedded Linux Team][team], promises
-to intervene to uphold that code of conduct.
+Conduct][CoC], the maintainer of this crate, the [Embedded Linux Team][team],
+promises to intervene to uphold that code of conduct.
 
 [CoC]: CODE_OF_CONDUCT.md
 [team]: https://github.com/rust-embedded/wg#the-embedded-linux-team

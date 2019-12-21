@@ -21,18 +21,23 @@ use std::path::Path;
 // Expose these core structs from this module
 pub use core::I2CMessage;
 
+/// Representation of an addressed I2C device in Linux
 pub struct LinuxI2CDevice {
     devfile: File,
     slave_address: u16,
 }
 
+/// Bus used to communicate with an I2C device
 pub struct LinuxI2CBus {
     devfile: File,
 }
 
+/// Error type for Linux I2C operations
 #[derive(Debug)]
 pub enum LinuxI2CError {
+    /// \*nix system or libc error
     Nix(nix::Error),
+    /// I/O operation error
     Io(io::Error),
 }
 
@@ -98,7 +103,7 @@ impl AsRawFd for LinuxI2CBus {
 }
 
 impl LinuxI2CDevice {
-    /// Create a new I2CDevice for the specified path
+    /// Create a new `I2CDevice` for the specified path
     pub fn new<P: AsRef<Path>>(
         path: P,
         slave_address: u16,
@@ -159,8 +164,8 @@ impl I2CDevice for LinuxI2CDevice {
 
     /// Write a single byte to a sdevice, without specifying a device register
     ///
-    /// This is the opposite operation as smbus_read_byte.  As with read_byte,
-    /// no register is specified.
+    /// This is the opposite operation as `smbus_read_byte`.  As with
+    /// `read_byte`, no register is specified.
     fn smbus_write_byte(&mut self, value: u8) -> Result<(), LinuxI2CError> {
         ffi::i2c_smbus_write_byte(self.as_raw_fd(), value).map_err(From::from)
     }
@@ -203,7 +208,8 @@ impl I2CDevice for LinuxI2CDevice {
         ffi::i2c_smbus_read_block_data(self.as_raw_fd(), register).map_err(From::from)
     }
 
-    /// Read a block of up to 32 bytes from a device via i2c_smbus_i2c_read_block_data
+    /// Read a block of up to 32 bytes from a device via
+    /// `i2c_smbus_i2c_read_block_data`
     fn smbus_read_i2c_block_data(
         &mut self,
         register: u8,
@@ -221,7 +227,8 @@ impl I2CDevice for LinuxI2CDevice {
         ffi::i2c_smbus_write_block_data(self.as_raw_fd(), register, values).map_err(From::from)
     }
 
-    /// Write a block of up to 32 bytes from a device via i2c_smbus_i2c_write_block_data
+    /// Write a block of up to 32 bytes from a device via
+    /// `i2c_smbus_i2c_write_block_data`
     fn smbus_write_i2c_block_data(
         &mut self,
         register: u8,
@@ -230,8 +237,8 @@ impl I2CDevice for LinuxI2CDevice {
         ffi::i2c_smbus_write_i2c_block_data(self.as_raw_fd(), register, values).map_err(From::from)
     }
 
-    /// Select a register, send 1 to 31 bytes of data to it, and reads
-    /// 1 to 31 bytes of data from it.
+    /// Select a register, send 1 to 31 bytes of data to it, and read 1 to 31
+    /// bytes of data from it
     fn smbus_process_block(
         &mut self,
         register: u8,
@@ -255,7 +262,7 @@ impl<'a> I2CTransfer<'a> for LinuxI2CDevice {
 }
 
 impl LinuxI2CBus {
-    /// Create a new LinuxI2CBus for the specified path
+    /// Create a new `LinuxI2CBus` for the specified path
     pub fn new<P: AsRef<Path>>(path: P) -> Result<LinuxI2CBus, LinuxI2CError> {
         let file = OpenOptions::new().read(true).write(true).open(path)?;
         let bus = LinuxI2CBus { devfile: file };
@@ -277,10 +284,10 @@ impl<'a> I2CTransfer<'a> for LinuxI2CBus {
 }
 
 bitflags! {
-    /// Various flags used by the i2c_rdwr ioctl on Linux. For details, see
-    /// https://www.kernel.org/doc/Documentation/i2c/i2c-protocol
+    /// Various flags used by the `i2c_rdwr` ioctl on Linux. For details, see
+    /// the [Linux Kernel I2C protocol documentation](https://www.kernel.org/doc/Documentation/i2c/i2c-protocol).
     ///
-    /// In general, these are for special cases and should not be needed
+    /// In general, these are for special cases and should not be needed.
     pub struct I2CMessageFlags: u16 {
         /// Use ten bit addressing on this message
         const TEN_BIT_ADDRESS = 0x0010;

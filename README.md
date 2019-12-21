@@ -2,15 +2,14 @@
 
 [![Build Status](https://travis-ci.org/rust-embedded/rust-i2cdev.svg?branch=master)](https://travis-ci.org/rust-embedded/rust-i2cdev)
 [![Version](https://img.shields.io/crates/v/i2cdev.svg)](https://crates.io/crates/i2cdev)
+[![Docs](https://docs.rs/i2cdev/badge.svg)](https://docs.rs/i2cdev)
 [![License](https://img.shields.io/crates/l/i2cdev.svg)](https://github.com/rust-embedded/rust-i2cdev/blob/master/README.md#license)
-
-[Documentation](https://docs.rs/i2cdev)
 
 The Rust `i2cdev` crate seeks to provide full access to the Linux i2cdev
 driver interface in Rust without the need to wrap any C code or directly make
 low-level system calls.  The documentation for the i2cdev interace can
-be found at https://www.kernel.org/doc/Documentation/i2c/dev-interface and
-in the [lm-sensors projects](http://www.lm-sensors.org/).
+be found in the [Linux Kernel documentation](https://www.kernel.org/doc/Documentation/i2c/dev-interface)
+and in the [lm-sensors projects](http://www.lm-sensors.org/).
 
 Device driver developers should consider building on top of the
 [embedded-hal](https://crates.io/crates/embedded-hal) traits rather than

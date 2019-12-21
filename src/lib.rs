@@ -9,9 +9,12 @@
 //! # i2cdev
 //!
 //! The `i2cdev` crate provides a safe interface for interface
-//! with i2c devices under Linux.  The API wraps the Linux
-//! kernel interface for interacting with i2c in userspace:
-//! https://www.kernel.org/doc/Documentation/i2c/dev-interface
+//! with I2C devices under Linux.  The API wraps the [Linux Kernel
+//! interface](https://www.kernel.org/doc/Documentation/i2c/dev-interface) for
+//! interacting with I2C in userspace.
+//!
+//! ## Examples
+//!
 //! ```rust,no_run
 //! extern crate i2cdev;
 //!

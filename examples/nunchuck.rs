@@ -129,10 +129,7 @@ mod nunchuck {
             let mut buf: [u8; 6] = [0; 6];
 
             // tell the nunchuck to prepare a sample
-            try!(self
-                .i2cdev
-                .smbus_write_byte(0x00)
-                .map_err(NunchuckError::Error));
+            self.i2cdev.smbus_write_byte(0x00).map_err(NunchuckError::Error)?;
 
             // now, read it!
             thread::sleep(Duration::from_millis(10));

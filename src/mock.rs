@@ -6,12 +6,12 @@
 // option.  This file may not be copied, modified, or distributed
 // except according to those terms.
 
-//! Mock I2C trait implementations for use in development and testing
+//! Mock I2C trait implementations for use in development and testing.
 
 use core::{I2CDevice, I2CMessage, I2CTransfer};
 use std::io;
 
-/// I2C communications operation result alias
+/// I2C communications operation result alias.
 pub type I2CResult<T> = io::Result<T>;
 
 pub struct I2CRegisterMap {
@@ -26,8 +26,8 @@ impl Default for I2CRegisterMap {
 }
 
 impl I2CRegisterMap {
-    pub fn new() -> I2CRegisterMap {
-        I2CRegisterMap {
+    pub fn new() -> Self {
+        Self {
             registers: [0x00; 0xFF],
             offset: 0,
         }
@@ -40,7 +40,7 @@ impl I2CRegisterMap {
 }
 
 impl I2CRegisterMap {
-    /// Read data from the device to fill the provided slice
+    /// Read data from the device to fill the provided slice.
     fn read(&mut self, data: &mut [u8]) -> I2CResult<()> {
         let len = data.len();
         data.clone_from_slice(&self.registers[self.offset..(self.offset + len)]);
@@ -48,7 +48,7 @@ impl I2CRegisterMap {
         Ok(())
     }
 
-    /// Write the provided buffer to the device
+    /// Write the provided buffer to the device.
     fn write(&mut self, data: &[u8]) -> I2CResult<()> {
         // ASSUMPTION: first byte sets the offset
         // ASSUMPTION: write has length of at least one (will panic)
@@ -126,7 +126,7 @@ impl<'a> I2CMessage<'a> for MockI2CMessage<'a> {
         }
     }
 
-    /// Write data to device
+    /// Write data to device.
     fn write(data: &'a [u8]) -> Self {
         Self {
             msg_type: MessageType::Write(data),
@@ -141,7 +141,7 @@ where
     type Error = io::Error;
     type Message = MockI2CMessage<'a>;
 
-    /// Issue the provided sequence of I2C transactions
+    /// Issue the provided sequence of I2C transactions.
     fn transfer(&mut self, messages: &'a mut [Self::Message]) -> Result<u32, Self::Error> {
         for msg in messages.iter_mut() {
             match &mut msg.msg_type {

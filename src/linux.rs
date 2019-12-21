@@ -6,7 +6,7 @@
 // option.  This file may not be copied, modified, or distributed
 // except according to those terms.
 
-//! Linux I2C trait implementations
+//! Linux-specific I2C trait implementations.
 
 use core::{I2CDevice, I2CTransfer};
 use ffi;
@@ -23,18 +23,18 @@ use std::path::Path;
 // Expose these core structs from this module
 pub use core::I2CMessage;
 
-/// Representation of an addressed I2C device in Linux
+/// Representation of an addressed I2C device in Linux.
 pub struct LinuxI2CDevice {
     devfile: File,
     slave_address: u16,
 }
 
-/// Bus used to communicate with an I2C device
+/// Bus used to communicate with an I2C device.
 pub struct LinuxI2CBus {
     devfile: File,
 }
 
-/// Error type for Linux I2C operations
+/// Error type for Linux I2C operations.
 #[derive(Debug)]
 pub enum LinuxI2CError {
     /// \*nix system or libc error
@@ -105,7 +105,7 @@ impl AsRawFd for LinuxI2CBus {
 }
 
 impl LinuxI2CDevice {
-    /// Create a new `I2CDevice` for the specified path
+    /// Create a new `LinuxI2CDevice` for the specified path.
     pub fn new<P: AsRef<Path>>(
         path: P,
         slave_address: u16,
@@ -119,14 +119,14 @@ impl LinuxI2CDevice {
         Ok(device)
     }
 
-    /// Set the slave address for this device
+    /// Set the slave address for this device.
     ///
     /// Typically the address is expected to be 7-bits but 10-bit addresses
     /// may be supported by the kernel driver in some cases.  Little validation
     /// is done in Rust as the kernel is good at making sure things are valid.
     ///
     /// Note that if you have created a device using
-    /// `I2Device::new(...)` it is not necesasry to call this method
+    /// `LinuxI2Device::new(...)` it is not necesasry to call this method
     /// (it is done internally).  Calling this method is only
     /// necessary if you need to change the slave device and you do
     /// not want to create a new device.
@@ -140,22 +140,22 @@ impl LinuxI2CDevice {
 impl I2CDevice for LinuxI2CDevice {
     type Error = LinuxI2CError;
 
-    /// Read data from the device to fill the provided slice
+    /// Read data from the device to fill the provided slice.
     fn read(&mut self, data: &mut [u8]) -> Result<(), LinuxI2CError> {
         self.devfile.read(data).map_err(From::from).map(drop)
     }
 
-    /// Write the provided buffer to the device
+    /// Write the provided buffer to the device.
     fn write(&mut self, data: &[u8]) -> Result<(), LinuxI2CError> {
         self.devfile.write(data).map_err(From::from).map(drop)
     }
 
-    /// This sends a single bit to the device, at the place of the Rd/Wr bit
+    /// Send a single bit to the device at the place of the Rd/Wr bit.
     fn smbus_write_quick(&mut self, bit: bool) -> Result<(), LinuxI2CError> {
         ffi::i2c_smbus_write_quick(self.as_raw_fd(), bit).map_err(From::from)
     }
 
-    /// Read a single byte from a device, without specifying a device register
+    /// Read a single byte from a device without specifying a device register.
     ///
     /// Some devices are so simple that this interface is enough; for
     /// others, it is a shorthand if you want to read the same register as in
@@ -164,44 +164,41 @@ impl I2CDevice for LinuxI2CDevice {
         ffi::i2c_smbus_read_byte(self.as_raw_fd()).map_err(From::from)
     }
 
-    /// Write a single byte to a sdevice, without specifying a device register
+    /// Write a single byte to a device, without specifying a device register.
     ///
-    /// This is the opposite operation as `smbus_read_byte`.  As with
-    /// `read_byte`, no register is specified.
+    /// This is the opposite operation as `smbus_read_byte`.
     fn smbus_write_byte(&mut self, value: u8) -> Result<(), LinuxI2CError> {
         ffi::i2c_smbus_write_byte(self.as_raw_fd(), value).map_err(From::from)
     }
 
-    /// Read a single byte from a device, from a designated register
-    ///
-    /// The register is specified through the Comm byte.
+    /// Read a single byte from a device from a designated register specified
+    /// through the Comm byte.
     fn smbus_read_byte_data(&mut self, register: u8) -> Result<u8, LinuxI2CError> {
         ffi::i2c_smbus_read_byte_data(self.as_raw_fd(), register).map_err(From::from)
     }
 
-    /// Write a single byte to a specific register on a device
-    ///
-    /// The register is specified through the Comm byte.
+    /// Write a single byte to a specific register on a device specified through
+    /// the Comm byte.
     fn smbus_write_byte_data(&mut self, register: u8, value: u8) -> Result<(), LinuxI2CError> {
         ffi::i2c_smbus_write_byte_data(self.as_raw_fd(), register, value).map_err(From::from)
     }
 
-    /// Read 2 bytes form a given register on a device
+    /// Read 2 bytes form a given register on a device.
     fn smbus_read_word_data(&mut self, register: u8) -> Result<u16, LinuxI2CError> {
         ffi::i2c_smbus_read_word_data(self.as_raw_fd(), register).map_err(From::from)
     }
 
-    /// Write 2 bytes to a given register on a device
+    /// Write 2 bytes to a given register on a device.
     fn smbus_write_word_data(&mut self, register: u8, value: u16) -> Result<(), LinuxI2CError> {
         ffi::i2c_smbus_write_word_data(self.as_raw_fd(), register, value).map_err(From::from)
     }
 
-    /// Select a register, send 16 bits of data to it, and read 16 bits of data
+    /// Select a register, send 16 bits of data to it, and read 16 bits of data.
     fn smbus_process_word(&mut self, register: u8, value: u16) -> Result<u16, LinuxI2CError> {
         ffi::i2c_smbus_process_call(self.as_raw_fd(), register, value).map_err(From::from)
     }
 
-    /// Read a block of up to 32 bytes from a device
+    /// Read a block of up to 32 bytes from a device.
     ///
     /// The actual number of bytes available to read is returned in the count
     /// byte.  This code returns a correctly sized vector containing the
@@ -211,7 +208,7 @@ impl I2CDevice for LinuxI2CDevice {
     }
 
     /// Read a block of up to 32 bytes from a device via
-    /// `i2c_smbus_i2c_read_block_data`
+    /// `i2c_smbus_i2c_read_block_data`.
     fn smbus_read_i2c_block_data(
         &mut self,
         register: u8,
@@ -220,7 +217,7 @@ impl I2CDevice for LinuxI2CDevice {
         ffi::i2c_smbus_read_i2c_block_data(self.as_raw_fd(), register, len).map_err(From::from)
     }
 
-    /// Write a block of up to 32 bytes to a device
+    /// Write a block of up to 32 bytes to a device.
     ///
     /// The opposite of the Block Read command, this writes up to 32 bytes to
     /// a device, to a designated register that is specified through the
@@ -230,7 +227,7 @@ impl I2CDevice for LinuxI2CDevice {
     }
 
     /// Write a block of up to 32 bytes from a device via
-    /// `i2c_smbus_i2c_write_block_data`
+    /// `i2c_smbus_i2c_write_block_data`.
     fn smbus_write_i2c_block_data(
         &mut self,
         register: u8,
@@ -240,7 +237,7 @@ impl I2CDevice for LinuxI2CDevice {
     }
 
     /// Select a register, send 1 to 31 bytes of data to it, and read 1 to 31
-    /// bytes of data from it
+    /// bytes of data from it.
     fn smbus_process_block(
         &mut self,
         register: u8,
@@ -254,7 +251,7 @@ impl<'a> I2CTransfer<'a> for LinuxI2CDevice {
     type Error = LinuxI2CError;
     type Message = LinuxI2CMessage<'a>;
 
-    /// Issue the provided sequence of I2C transactions
+    /// Issue the provided sequence of I2C transactions.
     fn transfer(&mut self, messages: &'a mut [Self::Message]) -> Result<u32, LinuxI2CError> {
         for msg in messages.iter_mut() {
             (*msg).addr = self.slave_address;
@@ -264,7 +261,7 @@ impl<'a> I2CTransfer<'a> for LinuxI2CDevice {
 }
 
 impl LinuxI2CBus {
-    /// Create a new `LinuxI2CBus` for the specified path
+    /// Create a new `LinuxI2CBus` for the specified path.
     pub fn new<P: AsRef<Path>>(path: P) -> Result<LinuxI2CBus, LinuxI2CError> {
         let file = OpenOptions::new().read(true).write(true).open(path)?;
         let bus = LinuxI2CBus { devfile: file };
@@ -272,7 +269,7 @@ impl LinuxI2CBus {
     }
 }
 
-/// Linux I2C message
+/// Linux I2C message.
 pub type LinuxI2CMessage<'a> = ffi::i2c_msg;
 
 impl<'a> I2CTransfer<'a> for LinuxI2CBus {

@@ -1,5 +1,4 @@
 [package]
-
 name = "i2cdev"
 version = "0.4.4"
 authors = ["Paul Osborne <osbpau@gmail.com>"]
@@ -21,4 +20,3 @@ nix = "0.14"
 
 [dev-dependencies]
 docopt = "1"
-

@@ -16,6 +16,12 @@ use std::error::Error;
 /// Typical implementations will store state with references to the bus
 /// in use and the address of the slave device.  The trait is based on the
 /// [Linux i2cdev interface](https://www.kernel.org/doc/Documentation/i2c/dev-interface).
+///
+/// Many methods within this trait perform operations using the *S*ystem
+/// *M*anagement *Bus* (SMBus) protocol, a more widely compatible subset of the
+/// complete I2C protocol. See the [Linux Kernel SMBus protocol
+/// documentation](https://www.kernel.org/doc/Documentation/i2c/smbus-protocol)
+/// for more details.
 pub trait I2CDevice {
     type Error: Error;
 
@@ -25,7 +31,7 @@ pub trait I2CDevice {
     /// Write the provided buffer to the device
     fn write(&mut self, data: &[u8]) -> Result<(), Self::Error>;
 
-    /// This sends a single bit to the device, at the place of the Rd/Wr bit
+    /// Send a single bit to the device, at the place of the Rd/Wr bit
     fn smbus_write_quick(&mut self, bit: bool) -> Result<(), Self::Error>;
 
     /// Read a single byte from a device, without specifying a device register
@@ -113,8 +119,8 @@ pub trait I2CDevice {
         values: &[u8],
     ) -> Result<(), Self::Error>;
 
-    /// Select a register, send 1 to 31 bytes of data to it, and reads
-    /// 1 to 31 bytes of data from it.
+    /// Select a register, send 1 to 31 bytes of data to it, and read 1 to 31
+    /// bytes of data from it
     fn smbus_process_block(&mut self, register: u8, values: &[u8]) -> Result<Vec<u8>, Self::Error>;
 }
 
@@ -122,9 +128,9 @@ pub trait I2CDevice {
 ///
 /// This is used when the client wants to interact directly with the bus
 /// without specifying an I2C slave address up-front, either because it needs
-/// to communicate with multiple addresses without creatings separate
-/// I2CDevice objects, or because it wants to make used of the I2C_RDWR ioctl
-/// which allows the client to send and transmit multiple sets I2C data in a
+/// to communicate with multiple addresses without creating separate
+/// `I2CDevice` objects, or because it wants to make use of the I2C_RDWR ioctl
+/// which allows the client to send and transmit multiple sets of I2C data in a
 /// single operation, potentially to different I2C slave addresses.
 ///
 /// Typical implementations will store state with references to the bus
@@ -135,7 +141,7 @@ pub trait I2CTransfer<'a> {
     type Message: I2CMessage<'a>;
 
     /// Perform multiple serially chained I2C read/write transactions
-
+    ///
     /// On success the return code is the number of successfully executed
     /// transactions.
     fn transfer(&mut self, msgs: &'a mut [Self::Message]) -> Result<u32, Self::Error>;
